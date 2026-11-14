@@ -1,0 +1,795 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="onboarding.css" />
+  <link rel="stylesheet" href="onboarding-intro.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loggy3</title>
+  <script type="module" src="/main.js" defer></script>
+</head>
+
+<body class="app-initializing">
+  <div id="staging-banner" class="staging-banner" hidden>
+    STAGING · uploads to staging.loggy3.com
+  </div>
+  <div class="app-startup" role="status" aria-live="polite">
+    <span class="app-startup-spinner" aria-hidden="true"></span>
+    <span id="app-startup-message">Starting…</span>
+  </div>
+  <div id="account-banned-screen" class="account-banned-screen" role="alert" hidden>
+    <p>You have been removed from the <span data-app-name>Loggy3</span> recording program.</p>
+    <div class="account-banned-legal-links">
+      <a id="account-banned-terms" href="#" target="_blank" rel="noopener noreferrer">Terms</a>
+      <span aria-hidden="true">·</span>
+      <a id="account-banned-privacy" href="#" target="_blank" rel="noopener noreferrer">Privacy</a>
+    </div>
+  </div>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div id="onboarding-steps" class="sidebar-section" hidden>
+        <div class="sidebar-title">GET STARTED</div>
+        <div class="sidebar-item" data-step="0"><span class="sidebar-icon" aria-hidden="true">1</span><span class="sidebar-label">Account</span></div>
+        <div class="sidebar-item" data-step="1"><span class="sidebar-icon" aria-hidden="true">2</span><span class="sidebar-label">Participation</span></div>
+        <div class="sidebar-item" data-step="2"><span class="sidebar-icon" aria-hidden="true">3</span><span class="sidebar-label">Identity</span></div>
+        <div class="sidebar-item" data-step="3"><span class="sidebar-icon" aria-hidden="true">4</span><span class="sidebar-label">Permissions</span></div>
+        <div class="sidebar-item" data-step="4"><span class="sidebar-icon" aria-hidden="true">5</span><span class="sidebar-label">First recording</span></div>
+      </div>
+      <div id="account-tabs-container" class="sidebar-section">
+        <div class="sidebar-title">ACCOUNT</div>
+        <div class="sidebar-list">
+          <button id="tab-login" class="sidebar-item auth-sidebar-item" type="button">
+            <span class="sidebar-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </span>
+            <span class="sidebar-label" id="tab-login-label">Sign In</span>
+          </button>
+          <div id="sidebar-rate-tier" class="sidebar-item sidebar-static-item sidebar-tier" tabindex="0" aria-describedby="sidebar-rate-tier-tooltip" hidden>
+            <span class="sidebar-icon sidebar-tier-meter" aria-hidden="true">
+              <svg viewBox="0 0 14 14">
+                <rect x="0.5" y="9" width="2.6" height="4.5" rx="0.9"></rect>
+                <rect x="4.1" y="6.5" width="2.6" height="7" rx="0.9"></rect>
+                <rect x="7.7" y="4" width="2.6" height="9.5" rx="0.9"></rect>
+                <rect x="11.3" y="1.5" width="2.6" height="12" rx="0.9"></rect>
+              </svg>
+            </span>
+            <span class="sidebar-label"><span id="sidebar-rate-tier-name" class="sidebar-tier-name"></span><span class="sidebar-tier-suffix"> tier</span></span>
+            <div id="sidebar-rate-tier-tooltip" class="session-rate-tooltip sidebar-rate-tier-tooltip" role="tooltip"></div>
+          </div>
+          <button id="tab-referrals" class="sidebar-item" type="button" hidden>
+            <span class="sidebar-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polyline points="20 12 20 22 4 22 4 12"></polyline>
+                <rect x="2" y="7" width="20" height="5"></rect>
+                <line x1="12" y1="22" x2="12" y2="7"></line>
+                <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+                <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+              </svg>
+            </span>
+            <span class="sidebar-label">Referrals</span>
+            <span id="tab-referrals-badge" class="sidebar-badge" role="img" aria-label="New activity" hidden></span>
+          </button>
+          <button class="sidebar-item auth-sidebar-item" id="logout-btn" type="button" disabled>
+            <span class="sidebar-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+            </span>
+            <span class="sidebar-label">Sign Out</span>
+          </button>
+        </div>
+        <!-- After the list, since Sign Out is appended back to its end when onboarding finishes. -->
+        <div id="sidebar-referral" class="sidebar-referral" tabindex="0" aria-describedby="sidebar-referral-tooltip" hidden>
+          <span class="sidebar-referral-head">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" aria-hidden="true">
+              <polyline points="20 12 20 22 4 22 4 12"></polyline>
+              <rect x="2" y="7" width="20" height="5"></rect>
+              <line x1="12" y1="22" x2="12" y2="7"></line>
+              <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+              <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+            </svg>
+            <strong>Referral bonus</strong>
+            <strong id="sidebar-referral-amount"></strong>
+          </span>
+          <span class="sidebar-referral-bar" aria-hidden="true"><span id="sidebar-referral-fill"></span></span>
+          <span id="sidebar-referral-detail" class="sidebar-referral-detail"></span>
+          <div id="sidebar-referral-tooltip" class="session-rate-tooltip sidebar-rate-tier-tooltip" role="tooltip"></div>
+        </div>
+      </div>
+      <div id="recordings-tabs-container" class="sidebar-legal sidebar-section">
+        <div class="sidebar-title">RECORDINGS</div>
+        <div class="sidebar-list">
+          <button id="tab-sessions" class="sidebar-item" type="button">
+            <span class="sidebar-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                <path d="M7 4v16M17 4v16M2 10h5M2 14h5M17 10h5M17 14h5"></path>
+              </svg>
+            </span>
+            <span class="sidebar-label">Sessions</span>
+          </button>
+        </div>
+      </div>
+      <div id="legal-tabs-container" class="sidebar-legal sidebar-section">
+        <div class="sidebar-title">LEGAL</div>
+        <div class="sidebar-list">
+          <button id="tab-terms" class="sidebar-item active" type="button">
+            <span class="sidebar-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+            </span>
+            <span class="sidebar-label">Terms</span>
+          </button>
+          <button id="tab-privacy" class="sidebar-item" type="button">
+            <span class="sidebar-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+            </span>
+            <span class="sidebar-label">Privacy</span>
+          </button>
+          <button id="tab-contributor-agreement" class="sidebar-item" type="button" hidden>
+            <span class="sidebar-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M13 21h8"></path>
+                <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path>
+              </svg>
+            </span>
+            <span class="sidebar-label">Agreement</span>
+          </button>
+        </div>
+      </div>
+      <div id="debug-tabs-container" class="sidebar-legal sidebar-section">
+        <div class="sidebar-title">HELP</div>
+        <div class="sidebar-list">
+          <button id="tab-permissions" class="sidebar-item" type="button">
+            <span class="sidebar-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </span>
+            <span class="sidebar-label">Permissions</span>
+          </button>
+          <button id="tab-faq" class="sidebar-item" type="button" hidden>
+            <span class="sidebar-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <path d="M12 17h.01"></path>
+              </svg>
+            </span>
+            <span class="sidebar-label">FAQ</span>
+          </button>
+          <button id="tab-replay-check" class="sidebar-item" type="button" data-staging-only hidden>
+            <span class="sidebar-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M4 12a8 8 0 1 0 2.3-5.7L4 8"></path>
+                <path d="M4 4v4h4"></path>
+                <path d="m10 9 5 3-5 3z"></path>
+              </svg>
+            </span>
+            <span class="sidebar-label">Replay Check</span>
+          </button>
+          <button id="tab-debug-logs" class="sidebar-item" type="button">
+            <span class="sidebar-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M4 4h11l5 5v11H4z"></path><path d="M15 4v5h5"></path>
+                <path d="M8 13h8"></path><path d="M8 17h5"></path>
+              </svg>
+            </span>
+            <span class="sidebar-label">Logs</span>
+          </button>
+        </div>
+      </div>
+      <div id="onboarding-signout-slot" hidden></div>
+    </aside>
+
+    <section class="main-panel">
+      <div id="onboarding-bar" class="main-header" hidden><strong id="onboarding-stage" aria-live="polite"></strong></div>
+      <div class="main-header">
+        <p id="main-title">Please review and agree to continue.</p>
+        <span id="sessions-timezone" hidden></span>
+        <button id="sessions-range-toggle" class="sessions-range-button" type="button" aria-label="Date range: Week. Switch to Month" hidden>Week</button>
+        <p id="sessions-location" style="display: none; flex-basis: 100%; font-size: 11px; margin: 2px 0 0; color: #9aa0a6;"></p>
+      </div>
+
+      <section id="faq-section" class="faq-section" aria-label="Frequently asked questions" style="display: none;">
+        <div class="faq-scroll-frame">
+          <div class="faq-list" aria-label="FAQ questions and answers">
+            <details class="faq-question">
+              <summary><span>What does Loggy3 record?</span><span class="faq-toggle-mark" aria-hidden="true"></span></summary>
+              <p class="faq-answer">Loggy3 records your screen, computer inputs, and metadata. Your recordings and personally identifiable information are not sold to advertisers.</p>
+            </details>
+            <details class="faq-question">
+              <summary><span>How much do I earn per hour?</span><span class="faq-toggle-mark" aria-hidden="true"></span></summary>
+              <p class="faq-answer">Your hourly rate depends on your tier: Basic, Apprentice, Advanced, or Pro. New contributors start on Basic. Your tier depends on the kind of work you record. Skilled work like CAD, Excel, and programming earns higher tiers. Casual browsing and entertainment may earn lower tiers. Tiers are reviewed every pay cycle. Your tier is shown in the sidebar and your rate next to the Start button, and the app lets you know whenever your rate changes. Each recording is paid at the rate in effect when it started, for up to 10 hours per UTC day.</p>
+            </details>
+            <details class="faq-question" open>
+              <summary><span>When will I receive my first payment?</span><span class="faq-toggle-mark" aria-hidden="true"></span></summary>
+              <p class="faq-answer">Payments, including your first payment, are processed on the 1st and 15th of each month. Recordings count toward the pay period in which they finish uploading (UTC): the 1st–14th, or the 15th to the end of the month. Expect 1–3 days for processing. To confirm the exact date or check your payment status, email <a href="mailto:support@loggy3.com">support@loggy3.com</a>.</p>
+            </details>
+            <!-- Only for referrers and referred accounts; referrals.js fills in the target. -->
+            <details id="faq-referrals" class="faq-question" hidden>
+              <summary><span>When is a referral bonus paid?</span><span class="faq-toggle-mark" aria-hidden="true"></span></summary>
+              <p class="faq-answer"></p>
+            </details>
+            <details class="faq-question">
+              <summary><span>Where do I enter my payment details?</span><span class="faq-toggle-mark" aria-hidden="true"></span></summary>
+              <p class="faq-answer">You don’t need an existing Dots account or to sign up in advance. When your first payout is processed on the 1st or 15th, you’ll receive an email from <a href="https://usedots.com/">Dots</a> with a link to set up your payout account and enter your payment details. Expect 1–3 days for processing.</p>
+            </details>
+            <details class="faq-question">
+              <summary><span>What withdrawal methods do you support?</span><span class="faq-toggle-mark" aria-hidden="true"></span></summary>
+              <p class="faq-answer">We support GCash, PayMaya, GrabPay, M-Pesa, UPI, PayPal, AirTM, Payoneer, and more through our payment partner Dots. Availability varies by country. <a href="https://usedots.com/platform/coverage-map/">Learn more here</a>.</p>
+            </details>
+            <details class="faq-question">
+              <summary><span>Is there a minimum withdrawal or payout fee?</span><span class="faq-toggle-mark" aria-hidden="true"></span></summary>
+              <p class="faq-answer">There is no minimum withdrawal amount and no payout fee.</p>
+            </details>
+            <details class="faq-question">
+              <summary><span>Does it record my microphone or webcam?</span><span class="faq-toggle-mark" aria-hidden="true"></span></summary>
+              <p class="faq-answer">No. Loggy3 does not record your microphone or webcam.</p>
+            </details>
+            <details class="faq-question">
+              <summary><span>What if I accidentally record something private?</span><span class="faq-toggle-mark" aria-hidden="true"></span></summary>
+              <p class="faq-answer">Start and stop recording whenever you'd like. After you stop, there's a delay before your recording uploads.</p>
+              <p class="faq-answer">To delete a recording before it uploads, hover over the recording you wish to delete and a red trash can will appear</p>
+            </details>
+            <details class="faq-question">
+              <summary><span>Can I stop recording whenever I want?</span><span class="faq-toggle-mark" aria-hidden="true"></span></summary>
+              <p class="faq-answer">Yes. You can stop recording whenever you like. You’re paid for active recording time, and there’s no minimum number of hours you need to record each day.</p>
+            </details>
+            <details class="faq-question">
+              <summary><span>What counts as active recording time?</span><span class="faq-toggle-mark" aria-hidden="true"></span></summary>
+              <p class="faq-answer">Active time is time spent using your computer with inputs such as typing and clicking. Loggy3 automatically pauses after a period of inactivity. Most everyday computer use counts as active time. You can track your active time and see when recording is paused in the app.</p>
+              <p class="faq-answer">Do not use bots, auto-clickers, mouse jigglers, or similar tools to fake activity or keep recording while you’re away. Doing so will result in a ban from Loggy3.</p>
+            </details>
+            <details class="faq-question">
+              <summary><span>Do I need to complete specific tasks?</span><span class="faq-toggle-mark" aria-hidden="true"></span></summary>
+              <p class="faq-answer">No. Use your computer like you normally do. Play games, do homework, browse or shop online, or do anything else you already enjoy. There are no assigned tasks to complete.</p>
+            </details>
+            <details class="faq-question">
+              <summary><span>Will Loggy3 slow down my computer?</span><span class="faq-toggle-mark" aria-hidden="true"></span></summary>
+              <p class="faq-answer">Loggy3 is designed to run as a small background process. Most computers experience no noticeable slowdown during normal use.</p>
+            </details>
+            <details class="faq-question">
+              <summary><span>Who can join, and which devices are supported?</span><span class="faq-toggle-mark" aria-hidden="true"></span></summary>
+              <p class="faq-answer">You can join if you’re over 18 and live in a supported country. Currently, Loggy3 is available in the Philippines, Kenya, India, and Pakistan. You can use it on a computer running Windows 10, Windows 11, or macOS.</p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section id="referrals-section" class="panel-content referrals-section" aria-label="Referrals" style="display: none;">
+        <div class="referrals-header">
+          <div id="referrals-overview" class="referrals-overview" hidden></div>
+          <div class="referrals-code-card">
+            <div id="referrals-code-active" class="referrals-code-active">
+              <div class="referrals-code-text">
+                <span class="referrals-label">Your code</span>
+                <strong id="referrals-code" class="referrals-code"></strong>
+                <p class="referrals-code-note">Friends enter it during setup, before they record.</p>
+              </div>
+              <button id="referrals-code-copy" class="btn referrals-outline" type="button">Copy code</button>
+              <button id="referrals-invite-copy" class="btn btn-primary" type="button">Copy invite</button>
+            </div>
+            <div id="referrals-code-closed" class="referrals-code-closed" hidden>
+              <strong id="referrals-code-closed-code" class="referrals-code"></strong>
+              <p id="referrals-code-closed-text" class="referrals-closed">Your code is no longer accepting new friends.</p>
+            </div>
+          </div>
+        </div>
+        <div class="referrals-list-head">
+          <h2 class="referrals-heading">Friends</h2>
+        </div>
+        <p id="referrals-empty" class="referrals-empty" hidden>No friends have used your code yet.</p>
+        <ul id="referrals-friends" class="referrals-friends"></ul>
+        <details id="referrals-how-details" class="referrals-how">
+          <summary>How it works</summary>
+          <ol id="referrals-how" class="referral-steps"></ol>
+          <p id="referrals-how-note" class="referrals-how-note"></p>
+        </details>
+      </section>
+
+      <div id="legal-content" class="panel-content tos-panel"></div>
+
+      <div id="auth-section" class="panel-content auth-section" style="display: none;">
+        <div class="auth-card">
+          <div id="auth-completing" hidden>
+            <h1>Signing in…</h1>
+            <p>Checking your account setup.</p>
+          </div>
+
+          <div id="auth-email-step">
+            <h1>Get started with <span data-app-name>Loggy3</span></h1>
+            <p>We’ll email you a six-digit code. No password needed.</p>
+            <form id="auth-email-form" class="auth-form">
+              <label for="auth-email">Email address</label>
+              <input id="auth-email" name="email" type="email" autocomplete="email"
+                     inputmode="email" maxlength="254" required />
+            </form>
+          </div>
+
+          <div id="auth-code-step" hidden>
+            <h1>Check your email</h1>
+            <p>Enter the code sent to <strong id="auth-code-email"></strong>.</p>
+            <form id="auth-code-form" class="auth-form">
+              <label for="auth-code">Six-digit code</label>
+              <input id="auth-code" name="code" class="auth-code-input" type="text"
+                     inputmode="numeric" autocomplete="one-time-code" maxlength="6"
+                     pattern="[0-9]{6}" required />
+              <button id="auth-verify-code" class="btn btn-primary auth-primary" type="submit" aria-disabled="true">
+                <span class="auth-button-spinner" aria-hidden="true"></span>
+                <span id="auth-verify-code-label">Verify code</span>
+              </button>
+            </form>
+            <div class="auth-code-actions">
+              <button id="auth-resend-code" class="auth-link" type="button">
+                <span class="auth-button-spinner" aria-hidden="true"></span>
+                <span id="auth-resend-code-label">Resend code</span>
+              </button>
+              <button id="auth-change-email" class="auth-link" type="button">Use a different email</button>
+            </div>
+          </div>
+
+          <div id="auth-error-notice" role="alert" hidden>
+            <span class="auth-notice-icon" aria-hidden="true">!</span>
+            <strong id="auth-error-title" class="auth-notice-title" hidden></strong>
+            <p id="auth-error" class="auth-error" hidden></p>
+          </div>
+
+          <div id="auth-turnstile" class="auth-turnstile" data-state="loading">
+            <div class="auth-turnstile-header">
+              <span class="auth-notice-icon" aria-hidden="true">!</span>
+              <span class="auth-turnstile-label">Security check</span>
+              <span class="auth-turnstile-spinner" aria-hidden="true"></span>
+              <span id="auth-turnstile-status" class="auth-turnstile-status" role="status" aria-live="polite">Loading…</span>
+              <span id="auth-turnstile-detail" class="auth-notice-detail" hidden></span>
+              <button id="auth-turnstile-retry" class="auth-link auth-turnstile-retry" type="button" aria-label="Retry security check" hidden>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 7v5h-5M20 12a8 8 0 1 0-2.3 5.7"/></svg>
+                Retry
+              </button>
+            </div>
+            <iframe id="auth-turnstile-frame" title="Security check" sandbox="allow-scripts allow-forms allow-same-origin allow-popups"
+                    referrerpolicy="no-referrer" scrolling="no" hidden></iframe>
+          </div>
+
+          <p id="auth-message" class="auth-message" role="status" aria-live="polite"></p>
+          <button id="auth-send-code" class="btn btn-primary auth-primary" type="submit" form="auth-email-form" aria-disabled="true">
+            <span class="auth-button-spinner" aria-hidden="true"></span>
+            <span id="auth-send-code-label">Send code</span>
+          </button>
+          <footer class="auth-legal-footer">
+            <a id="auth-terms" class="auth-link" href="https://loggy3.com/terms">Terms</a>
+            <span aria-hidden="true">·</span>
+            <a id="auth-privacy" class="auth-link" href="https://loggy3.com/privacy">Privacy</a>
+          </footer>
+        </div>
+      </div>
+
+      <div id="agreement-section" class="panel-content agreement-section" style="display: none;">
+        <div class="agreement-card" aria-busy="false">
+          <div class="agreement-heading">
+            <h1>Contributor Agreement</h1>
+            <p id="agreement-intro">Review the complete PDF agreement before recording or uploading.</p>
+          </div>
+          <p id="agreement-status" class="agreement-status" role="status" aria-live="polite"></p>
+          <iframe id="agreement-document" class="agreement-document" title="User Service Agreement"
+                  referrerpolicy="no-referrer" hidden></iframe>
+          <form id="agreement-form" class="agreement-form" hidden>
+            <div class="agreement-form-heading">
+              <label for="agreement-signer-name">Full legal name</label>
+              <p>Your typed name is your asserted legal name and will be stored with your acceptance.</p>
+            </div>
+            <input id="agreement-signer-name" name="signer_name" type="text"
+                   autocomplete="name" maxlength="200" required />
+            <button id="agreement-accept" class="btn btn-primary" type="submit">
+              Sign and Accept Agreement
+            </button>
+          </form>
+          <p id="agreement-support" class="agreement-support" hidden>
+            Any inquiries relating to data or withdrawal from the program should be sent to support@loggy3.com.
+          </p>
+          <button id="agreement-retry" class="btn" type="button" hidden>Try Again</button>
+          <p id="agreement-error" class="auth-error" role="alert" hidden></p>
+        </div>
+      </div>
+
+      <div id="recording-consent-section" class="panel-content recording-consent-section" style="display: none;">
+        <div class="recording-consent-card">
+          <div class="recording-consent-heading">
+            <h1>Recording Consent</h1>
+            <p id="recording-consent-intro">Please review and consent before continuing.</p>
+          </div>
+          <div class="recording-consent-copy"></div>
+          <form id="recording-consent-form" class="recording-consent-form">
+            <label class="recording-consent-control" for="recording-consent-checkbox">
+              <input id="recording-consent-checkbox" type="checkbox" required />
+              <span>I consent to the recording described above</span>
+            </label>
+            <button id="recording-consent-reject" class="btn recording-consent-reject" type="button">
+              Reject and Exit
+            </button>
+            <button id="recording-consent-continue" class="btn btn-primary recording-consent-continue" type="submit" disabled>
+              Continue
+            </button>
+          </form>
+          <p id="recording-consent-error" class="auth-error" role="alert" hidden></p>
+        </div>
+      </div>
+
+      <div id="referral-code-section" class="panel-content auth-section" style="display: none;">
+        <div class="auth-card referral-code-card">
+          <h1 id="referral-code-title">Got a referral code?</h1>
+          <div id="referral-code-ask">
+            <p>If a friend invited you, enter their code now. <strong>You can’t add it later.</strong></p>
+            <p id="referral-code-error" class="auth-error" role="alert" hidden></p>
+            <div id="referral-code-choices" class="referral-code-choices">
+              <button id="referral-code-none" class="referral-code-choice" type="button">
+                <span><strong>I don’t have one</strong><span>Continue setting up</span></span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+              </button>
+              <button id="referral-code-have" class="referral-code-choice" type="button">
+                <span><strong>I have a code</strong><span>Enter it now</span></span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+              </button>
+            </div>
+            <div id="referral-code-none-confirm" class="referral-code-actions" hidden>
+              <button id="referral-code-none-back" class="auth-link referral-code-back" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>Back</button>
+              <button id="referral-code-skip" class="btn btn-primary" type="button">Continue without a code</button>
+            </div>
+            <form id="referral-code-form" class="auth-form referral-code-form" hidden>
+              <input id="referral-code" type="text" placeholder="Referral code" aria-label="Referral code"
+                     autocomplete="off" spellcheck="false" autocapitalize="characters" maxlength="12" />
+              <ol id="referral-code-facts" class="referral-steps"></ol>
+              <p class="referral-code-consent">Your friend will see your email address, your uploaded hours, and whether you qualify for the bonus.</p>
+              <div class="referral-code-actions">
+                <button id="referral-code-back" class="auth-link referral-code-back" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>Back</button>
+                <button id="referral-code-apply" class="btn btn-primary" type="submit">Apply</button>
+              </div>
+            </form>
+          </div>
+          <p id="referral-code-applied" class="referral-code-applied" role="status" hidden></p>
+          <button id="referral-code-continue" class="btn btn-primary auth-primary referral-code-continue" type="button" hidden>Continue</button>
+        </div>
+      </div>
+
+      <div id="identity-section" class="panel-content identity-section" style="display: none;">
+        <div id="identity-card" class="identity-card" aria-busy="false">
+          <div id="onboarding-identity-processing" role="status">
+            <span class="onboarding-identity-spinner" aria-hidden="true"></span>
+            <h1>Checking your identity…</h1>
+            <p>We’re checking your verification status. If this takes a while, refresh the status or return later.</p>
+          </div>
+          <div id="onboarding-identity-header">
+            <div class="identity-shield" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <path d="m9 12 2 2 4-4"></path>
+              </svg>
+            </div>
+            <h1 id="identity-title">Check your identity verification</h1>
+          </div>
+          <div id="onboarding-identity-details">
+            <section id="onboarding-identity-why">
+              <h2 id="onboarding-identity-why-title">Why we ask</h2>
+              <p id="onboarding-preparation">We confirm every contributor is a real person so payouts reach the right person. Takes about 3 minutes.</p>
+              <div id="onboarding-identity-needs">
+                <h2>You’ll need</h2>
+                <ul>
+                  <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                      <circle cx="9" cy="11" r="2"></circle>
+                      <path d="M6 16c.6-1.3 1.7-2 3-2s2.4.7 3 2M14.5 10h4M14.5 13.5h3"></path>
+                    </svg>
+                    <span>A government photo ID</span>
+                  </li>
+                  <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M4 8h3l2-3h6l2 3h3v11H4z"></path>
+                      <circle cx="12" cy="13" r="3.5"></circle>
+                    </svg>
+                    <span>A phone or webcam for a quick selfie</span>
+                  </li>
+                </ul>
+              </div>
+            </section>
+            <section id="onboarding-identity-next">
+              <h2 id="onboarding-identity-next-title">What happens next</h2>
+              <ol id="onboarding-identity-steps">
+                <li><span>Persona, our verification partner, opens at <strong>withpersona.com</strong></span></li>
+                <li>Scan your ID and take a selfie</li>
+                <li>Come back here. Most checks finish in minutes.</li>
+              </ol>
+              <p id="identity-message"><span data-app-name>Loggy3</span> needs a current verification status before recording can begin.</p>
+            </section>
+          </div>
+          <div class="identity-actions">
+            <button id="identity-action" class="btn btn-primary identity-action" type="button">Verify my identity</button>
+            <button id="identity-refresh" class="identity-refresh" type="button">Refresh status</button>
+          </div>
+          <p id="identity-error" class="auth-error identity-error" role="alert" hidden></p>
+        </div>
+      </div>
+
+      <div id="permissions-section" class="panel-content" style="display: none; padding: 24px;">
+        <h1 style="font-size: 18px; margin-bottom: 8px;">Permissions needed</h1>
+        <p id="onboarding-permission-summary"></p>
+        <p style="margin-bottom: 20px; color: #444;">
+          <span data-app-name>Loggy3</span> needs screen and input access to record.
+          <span data-staging-only>Replay Check also needs
+          Accessibility so it can play mouse and keyboard input back.</span>
+        </p>
+
+        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 12px;">
+          <span id="perm-screen-status" style="font-size: 18px; width: 24px; text-align: center;">…</span>
+          <div style="flex: 1;">
+            <div style="font-weight: 600;">Screen Recording</div>
+            <div style="font-size: 12px; color: #666;">System Settings → Privacy &amp; Security → Screen Recording</div>
+          </div>
+          <button id="perm-screen-btn" class="btn btn-primary" type="button">Open Settings</button>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 12px;">
+          <span id="perm-input-status" style="font-size: 18px; width: 24px; text-align: center;">…</span>
+          <div style="flex: 1;">
+            <div style="font-weight: 600;">Input Monitoring</div>
+            <div style="font-size: 12px; color: #666;">System Settings → Privacy &amp; Security → Input Monitoring</div>
+          </div>
+          <button id="perm-input-btn" class="btn btn-primary" type="button">Open Settings</button>
+        </div>
+
+        <div id="perm-replay-row" data-staging-only style="display: none; align-items: center; gap: 12px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 16px;">
+          <span id="perm-replay-status" style="font-size: 18px; width: 24px; text-align: center;">…</span>
+          <div style="flex: 1;">
+            <div style="font-weight: 600;">Replay Control</div>
+            <div style="font-size: 12px; color: #666;">Accessibility · you must restart <span data-app-name>Loggy3</span> after enabling it</div>
+          </div>
+          <button id="perm-replay-btn" class="btn btn-primary" type="button">Open Settings</button>
+        </div>
+
+        <p style="font-size: 12px; color: #888;">
+          If <span data-app-name>Loggy3</span> isn't listed in System Settings, add it with the “+” button and select
+          <span data-app-name>Loggy3</span> from Applications. <span data-staging-only>After enabling Replay Control,
+          you must quit and reopen <span data-app-name>Loggy3</span> before playback will work.</span>
+        </p>
+      </div>
+
+      <div id="debug-tools-section" class="panel-content" style="display: none; padding: 0;">
+        <div id="dbg-pane-game" data-staging-only>
+          <div style="padding: 10px 14px 8px; display: flex; align-items: center; gap: 8px;">
+            <button id="game-restart" class="btn" type="button">Restart</button>
+            <button id="game-log" class="btn" type="button">Copy Log</button>
+            <span id="game-status" style="color: var(--vlc-muted); font-size: 12px;"></span>
+          </div>
+          <!-- Shown in place of the iframe rather than below it, so the panel height does
+               not change and the game keeps its state while you read the log. -->
+          <pre id="game-log-body" style="display: none; margin: 0 14px; height: 440px;
+                                         overflow: auto; user-select: text; background: #fff;
+                                         border: 1px solid var(--vlc-border); border-radius: 8px;
+                                         padding: 8px; white-space: pre; color: #333;
+                                         font: 11px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;"></pre>
+          <!-- Bundled from replay_tests/e2e.html at build time, so it cannot drift from the
+               version the standalone harness validates. Scroll calibration is measured
+               inside its scroll stages, so it needs no separate tool. -->
+          <iframe id="game-frame" title="Replay test game"
+                  style="width: 100%; height: 440px; border: 0; display: block; background: #fff;"></iframe>
+        </div>
+
+        <div id="dbg-pane-logs" style="display: none; padding: 10px 14px 12px;">
+          <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;">
+            <select id="log-which" class="btn" style="padding: 4px 8px;">
+              <option value="all">all logs</option>
+              <option value="app">app-log</option>
+              <option value="kernel">kernel-log</option>
+              <option value="sessions">sessions-log</option>
+            </select>
+            <input id="log-filter" type="text" placeholder="filter…"
+                   style="flex: 1; min-width: 120px; padding: 5px 8px; font-size: 13px;
+                          border: 1px solid var(--vlc-border); border-radius: 8px;" />
+            <button id="log-refresh" class="btn" type="button">Refresh</button>
+            <button id="log-copy" class="btn" type="button">Copy Shown</button>
+            <button id="log-copy-all" class="btn btn-primary" type="button">Copy All</button>
+            <button id="log-export" class="btn btn-primary" type="button">Export Diagnostics</button>
+            <label style="font-size: 12px; color: var(--vlc-muted); display: flex; align-items: center; gap: 4px;">
+              <input id="log-auto" type="checkbox" /> auto
+            </label>
+            <label style="font-size: 12px; color: var(--vlc-muted); display: flex; align-items: center; gap: 4px;">
+              <input id="log-raw" type="checkbox" /> raw
+            </label>
+          </div>
+
+          <!-- What the app IS, as opposed to what happened to it. The logs cannot answer
+               "which endpoint/key was this built against" if the line that would say so
+               was never written. -->
+          <div id="log-env" style="font-size: 11px; margin-bottom: 8px; background: #fff;
+                                   border: 1px solid var(--vlc-border); border-radius: 8px;
+                                   padding: 8px 10px; color: #444;
+                                   display: grid; grid-template-columns: auto 1fr;
+                                   gap: 2px 10px; align-items: baseline;"></div>
+
+          <div id="log-meta" style="font-size: 11px; color: var(--vlc-muted); margin-bottom: 6px;"></div>
+          <!-- Selectable so lines can be copied by hand as well as with the Copy button. -->
+          <pre id="log-body" style="margin: 0; height: 250px; overflow: auto; user-select: text;
+                                    background: #fff; border: 1px solid var(--vlc-border);
+                                    border-radius: 8px; padding: 8px;
+                                    font: 11px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+                                    white-space: pre; color: #333;"></pre>
+        </div>
+      </div>
+
+      <div id="replay-check-section" class="panel-content replay-check-section" data-staging-only style="display: none;">
+        <div class="replay-check-toolbar">
+          <div class="replay-check-summary">
+            <div>
+              <h1>Calibration game</h1>
+              <p>Record all 9 stages, then play them back.</p>
+            </div>
+          </div>
+          <button id="replay-check-record" class="btn btn-primary" type="button">Start recording</button>
+          <button id="replay-check-play" class="btn" type="button" disabled>Play recording</button>
+          <span id="replay-check-timer" class="replay-check-timer">00:00</span>
+        </div>
+        <p id="replay-check-message" class="replay-check-message">Step 1 of 3 — Start recording.</p>
+        <iframe id="replay-check-game-frame" class="replay-check-game-frame"
+                title="Replay calibration game"></iframe>
+      </div>
+
+      <div id="sessions-section" class="panel-content sessions-section" style="display: none;">
+        <div id="onboarding-history-card" class="identity-card" role="status" hidden>
+          <span id="onboarding-history-spinner" class="app-startup-spinner" aria-hidden="true"></span>
+          <h1 id="onboarding-history-title">Checking your recordings…</h1>
+          <p id="onboarding-history-copy">Looking for previous uploads on your account.</p>
+          <button id="onboarding-history-retry" class="btn btn-primary" type="button" hidden>Try again</button>
+        </div>
+        <div id="onboarding-first-card" class="identity-card" hidden>
+          <h1 id="onboarding-first-title">Start your first recording</h1>
+          <ol id="onboarding-recording-steps">
+            <li><span class="onboarding-recording-marker" aria-hidden="true">1</span><div><h2>Choose a task</h2><p>Pick something you’re comfortable sharing.</p></div></li>
+            <li><span class="onboarding-recording-marker" aria-hidden="true">2</span><div><h2 id="onboarding-record-step-title">Record it</h2><p id="onboarding-record-step-copy">Click Start below, then Stop when you’re done.</p></div></li>
+            <li><span class="onboarding-recording-marker" aria-hidden="true">3</span><div><h2 id="onboarding-upload-step-title">Upload automatically</h2><p id="onboarding-upload-step-copy">Loggy saves and uploads your recording.</p></div></li>
+          </ol>
+          <button id="onboarding-finish" class="btn btn-primary" type="button" hidden>Continue</button>
+        </div>
+        <div id="onboarding-welcome-card" class="identity-card" hidden>
+          <h1>Welcome to Loggy3!</h1>
+          <p>You’re all set up and ready to earn.</p>
+          <section>
+            <h2>Getting paid</h2>
+            <p>You don’t need an existing Dots account or to sign up in advance.</p>
+            <p>When your first payout is processed on the 1st or 15th, you’ll receive an email from our payment provider <a id="onboarding-payment-provider" href="https://usedots.com/" target="_blank" rel="noopener noreferrer">Dots</a> with a link to set up your payout account and enter your payment details. Expect 1–3 days for processing.</p>
+          </section>
+          <button id="onboarding-welcome-finish" class="btn btn-primary" type="button">Continue to Loggy3</button>
+        </div>
+        <div class="sessions-overview">
+          <div id="sessions-week-total" class="sessions-week-total" aria-live="polite">
+            <span id="sessions-total-hours" class="sessions-total-number">0</span><span class="sessions-total-unit">h</span>
+            <span id="sessions-total-minutes" class="sessions-total-number">00</span><span class="sessions-total-unit">m</span>
+          </div>
+          <div id="sessions-payout" class="sessions-payout" aria-live="polite" hidden>
+            <span><span class="sessions-payout-unit">$</span><span id="sessions-payout-amount">0.00</span></span>
+            <span id="sessions-payout-estimate" class="sessions-info sessions-payout-estimate" role="note" tabindex="0" aria-label="Estimated payout" aria-describedby="sessions-payout-tooltip"><span>est.</span><span>payout</span><span id="sessions-payout-tooltip" class="sessions-payout-tooltip" role="tooltip"></span></span>
+            <span class="sessions-payout-divider" aria-hidden="true"></span>
+            <span class="sessions-payout-hours"><span id="sessions-payout-hours">0</span><span class="sessions-payout-hours-unit"> h </span><span id="sessions-payout-minutes">00</span><span class="sessions-payout-hours-unit"> m</span></span>
+          </div>
+          <p id="sessions-history-status" class="sessions-history-status" role="status" hidden></p>
+          <div class="sessions-period-navigation">
+            <button id="sessions-prev" class="sessions-week-arrow" type="button" aria-label="Previous week">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
+            </button>
+            <span id="sessions-range"><span id="sessions-range-label"></span></span>
+            <button id="sessions-next" class="sessions-week-arrow" type="button" aria-label="Next week" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+            </button>
+          </div>
+        </div>
+        <div class="sessions-chart" role="group" aria-label="Daily recording time; choose a day to see its sessions">
+          <div class="sessions-grid" aria-hidden="true">
+            <div><span id="sessions-axis-max">8h</span></div>
+            <div><span id="sessions-axis-mid">4h</span></div>
+            <div><span>0</span></div>
+          </div>
+          <div id="sessions-days" class="sessions-days"></div>
+        </div>
+        <div class="sessions-ledger">
+          <div class="sessions-selected" aria-live="polite">
+            <span id="sessions-day-title"></span>
+            <span class="sessions-day-summary">
+              <span id="sessions-day-cap" class="sessions-info sessions-day-cap" role="img" tabindex="0" hidden>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /><path d="M12 9v4" /><path d="M12 17h.01" /></svg>
+              </span>
+              <span id="sessions-day-total"></span>
+            </span>
+          </div>
+          <div id="sessions-scroll-frame" class="sessions-scroll-frame">
+            <div id="sessions-scroll" class="sessions-scroll" role="region" aria-label="Recordings across all computers for selected day" tabindex="0">
+              <table class="sessions-table" aria-label="Recording start and end time, duration, and actions">
+                <colgroup><col><col style="width: 148px;"></colgroup>
+                <tbody id="sessions-list"></tbody>
+              </table>
+              <div id="sessions-empty" class="sessions-empty" hidden>
+                <p id="sessions-empty-title"></p>
+                <p id="sessions-empty-hint"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="onboarding-transition-status" role="status" aria-live="polite" hidden>
+        <span class="app-startup-spinner" aria-hidden="true"></span>
+        <span id="onboarding-transition-copy">Checking your account…</span>
+      </div>
+    </section>
+  </div>
+
+  <footer class="bottom-bar">
+    <div id="replay-gate-controls" class="replay-gate-controls" data-staging-only style="display: none;">
+      <button id="replay-gate-stop" class="btn btn-danger" type="button" disabled>
+        Checking Replay Check…
+      </button>
+      <span id="replay-gate-timer" class="replay-check-timer">00:00</span>
+    </div>
+
+    <div id="transport-controls" class="transport-controls" style="display: none;">
+      <div class="controls record-button-anchor">
+        <button id="record-btn" class="btn btn-primary btn-record" title="Start recording">
+          <svg class="icon" id="record-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <span id="record-text">Start</span>
+        </button>
+        <span id="onboarding-start-tip" role="tooltip" hidden>Click Start to begin your first recording.</span>
+      </div>
+      <div class="status-indicator" id="status-indicator" style="display: none;">
+        <span class="status-dot"></span>
+        <span class="status-text" id="status-text">Recording</span>
+      </div>
+      <div id="session-rate" class="session-rate" hidden><span id="session-rate-amount" class="session-rate-amount" tabindex="0" aria-describedby="session-rate-tooltip"></span><div id="session-rate-tooltip" class="session-rate-tooltip" role="tooltip"></div><span id="sessions-cap-policy" class="sessions-cap-policy" hidden></span></div>
+    </div>
+
+    <div class="elapsed-timer" id="elapsed-timer" style="display: none;">--:--:--</div>
+
+    <div id="tos-controls" class="tos-controls" style="display: flex;">
+      <label id="terms-accept-control" class="tos-accept">
+        <input type="checkbox" id="terms-accept-checkbox" />
+        I have read and agree to the Terms and Conditions
+      </label>
+      <label id="privacy-accept-control" class="tos-accept" style="display: none;">
+        <input type="checkbox" id="privacy-accept-checkbox" />
+        I have read and acknowledge the Privacy Notice
+      </label>
+      <button id="accept-legal-btn" class="btn btn-primary" disabled>Accept Terms and Continue</button>
+    </div>
+  </footer>
+</body>
+
+</html>
+
